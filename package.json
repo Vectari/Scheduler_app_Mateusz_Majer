@@ -10,9 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@devexpress/dx-react-core": "^4.0.8",
+    "@devexpress/dx-react-scheduler": "^4.0.8",
     "@devexpress/dx-react-scheduler-material-ui": "^4.0.8",
     "@fontsource/roboto": "^5.0.14",
-    "@mui/material": "^6.0.1",
+    "@mui/material": "^5.4.1",
+    "@mui/x-date-pickers": "^5.0.15",
     "@mui/styled-engine-sc": "^6.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
