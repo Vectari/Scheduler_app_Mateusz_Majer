@@ -1,8 +1,19 @@
-# React + Vite
+# Scheduler_app_Mateusz_Majer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1b18763b-2e8a-4ea1-8799-6c14d82fe13c/deploy-status)](https://app.netlify.com/sites/scheduler-majer/deploys)
 
-Currently, two official plugins are available:
+> https://scheduler-majer.netlify.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+TO DO: 
+
+- [x] Utwórz projekt React
+- [x] zainstaluj bibliotekę React Scheduler
+- [ ] Używając możliwości biblioteki utwórz widok kalendarza (Scheduler) obsługujący język polski
+- [ ] proste dodawanie wydarzenia do kalendarza
+- [ ] oraz usuwanie
+- [ ] możliwość przełączania pomiędzy widokiem dziennym, tygodniowym i miesięcznym
+- [ ] Wydarzenia powinny być zapisywane do i odczytywane z bazy Firestore
+- [ ] zrzut ekranu z panelu Firebase, zakładka Firestore Database
+- [x] Udostępnij gotowy projekt używając GitHub pages lub innego hostingu
+- [ ] maila: "imię i nazwisko - zadanie developer"
