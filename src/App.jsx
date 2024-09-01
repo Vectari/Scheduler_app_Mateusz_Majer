@@ -2,9 +2,10 @@ import "devextreme/dist/css/dx.light.css";
 import { Editing, Scheduler } from "devextreme-react/scheduler";
 import { locale, loadMessages } from "devextreme/localization";
 import plMessages from "devextreme/localization/messages/pl.json";
-import { appointments } from "./data.js";
+// import { appointments } from "./data.js";
 import { initializeApp } from "firebase/app";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 function App() {
   locale("pl");
@@ -25,19 +26,85 @@ function App() {
 
   const firestore = getFirestore(firebaseApp);
 
-  const appointmentsDB = doc(firestore, "appointments/appointments");
-  function handleAppointmentAdd() {
-    const docData = {
-      title: "Dodawanie do firestore!!!",
-    };
-    setDoc(appointmentsDB, docData)
-      .then(() => {
-        console.log("Add new appointment");
-      })
-      .catch((error) => {
-        console.log(`Adding error: ${error}`);
-      });
+  // const appointmentsDB = doc(firestore, "appointments/appointments");
+  // function handleAppointmentAdd() {
+  //   const docData = {
+  //     title: "Dodawanie do firestore!!!",
+  //   };
+  //   setDoc(appointmentsDB, docData)
+  //     .then(() => {
+  //       console.log("Add new appointment");
+  //     })
+  //     .catch((error) => {
+  //       console.log(`Adding error: ${error}`);
+  //     });
+  // }
+
+  // const appointmentsDB = doc(firestore, "appointments/appointments");
+  // function handleAppointmentAdd() {
+  //   const docData = {
+  //     title: "Dodawanie do firestore!!!",
+  //     title2: "Title 1"
+  //   };
+  //   setDoc(appointmentsDB, docData)
+  //     .then(() => {
+  //       console.log("Add new appointment");
+  //     })
+  //     .catch((error) => {
+  //       console.log(`Adding error: ${error}`);
+  //     });
+  // }
+
+  async function handleAppointmentAdd(appointment) {
+    const appointmentsCol = collection(firestore, "appointments");
+    await addDoc(appointmentsCol, {
+      title: appointment.title,
+      startDate: appointment.startDate, // should be a Firestore Timestamp
+      endDate: appointment.endDate, // should be a Firestore Timestamp
+      dayLong: appointment.dayLong || false,
+      recurrence: appointment.recurrence || "",
+    });
   }
+
+  // handleAppointmentAdd({
+  //   title: "Coś do zrobienia",
+  //   startDate: new Date("2024-09-01T08:45:00.000Z"),
+  //   endDate: new Date("2024-09-02T10:45:00.000Z")
+  // });
+
+  async function getAppointments() {
+    const appointmentsCol = collection(firestore, "appointments");
+    const appointmentsSnapshot = await getDocs(appointmentsCol);
+    const appointmentsList = appointmentsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        title: data.title, // text is used for event title
+        startDate: data.startDate.toDate(), // Scheduler requires JavaScript Date objects
+        endDate: data.endDate.toDate(), // Convert Firestore Timestamps
+        allDay: data.dayLong || false, // Optional field for all-day events
+        recurrenceRule: data.recurrence || "", // Optional recurrence rule
+      };
+    });
+    console.log(appointmentsList);
+
+    return appointmentsList;
+  }
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getAppointments();
+      setAppointments(data);
+    }
+
+    fetchData();
+  }, []);
+
+  // addAppointment({
+  //   title: "New Appointment",
+  //   startDate: new Date("2024-08-30T08:45:00.000Z"),
+  //   endDate: new Date("2024-08-30T09:45:00.000Z")
+  // });
 
   // Update an existing appointment
   // const handleAppointmentUpdate = async (e) => {
