@@ -12,6 +12,7 @@
   "dependencies": {
     "devextreme": "24.1.5",
     "devextreme-react": "24.1.5",
+    "firebase": "^10.13.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "styled-components": "^6.1.13"
