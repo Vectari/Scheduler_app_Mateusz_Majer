@@ -6,12 +6,12 @@ import { initializeApp } from "firebase/app";
 import {
   addDoc,
   collection,
-  getDocs,
   getFirestore,
   Timestamp,
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot, // Import onSnapshot
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -45,13 +45,13 @@ function App() {
   const firestore = getFirestore(firebaseApp);
 
   async function handleAppointmentUpdate(e) {
-    const appointment = e.appointmentData; // Extract appointment data from the event
-    const appointmentRef = doc(firestore, "appointments", appointment.id); // Create a reference to the specific appointment document
+    const appointment = e.appointmentData;
+    const appointmentRef = doc(firestore, "appointments", appointment.id);
 
     try {
       await updateDoc(appointmentRef, {
         title: appointment.title,
-        startDate: Timestamp.fromDate(new Date(appointment.startDate)), // Converting to Firestore Timestamp
+        startDate: Timestamp.fromDate(new Date(appointment.startDate)),
         endDate: Timestamp.fromDate(new Date(appointment.endDate)),
         dayLong: appointment.dayLong || false,
         recurrence: appointment.recurrence || "",
@@ -65,8 +65,8 @@ function App() {
   }
 
   async function handleAppointmentDelete(e) {
-    const appointment = e.appointmentData; // Extract appointment data from the event
-    const appointmentRef = doc(firestore, "appointments", appointment.id); // Create a reference to the specific appointment document
+    const appointment = e.appointmentData;
+    const appointmentRef = doc(firestore, "appointments", appointment.id);
 
     try {
       await deleteDoc(appointmentRef);
@@ -77,7 +77,7 @@ function App() {
   }
 
   async function handleAppointmentAdd(e) {
-    const appointment = e.appointmentData; // Extract appointment data from the event
+    const appointment = e.appointmentData;
     const appointmentsCol = collection(firestore, "appointments");
     const docRef = await addDoc(appointmentsCol, {
       title: appointment.title || "",
@@ -91,49 +91,37 @@ function App() {
         typeof appointment.dayLong === "boolean" ? appointment.dayLong : false,
       recurrence: appointment.recurrence || "",
       description: appointment.description || "",
-      // id: appointment.id,
     });
 
     console.log("Document added with ID:", docRef.id);
-
-    // Możesz teraz przechować docRef.id lokalnie lub w stanie aplikacji
     return docRef.id;
   }
 
-  // handleAppointmentAdd({
-  //   title: "Coś do zrobienia!!",
-  //   startDate: new Date("2024-09-10T08:45:00.000Z"),
-  //   endDate: new Date("2024-09-10T10:45:00.000Z"),
-  // });
-
-  async function getAppointments() {
+  function listenToAppointments() {
     const appointmentsCol = collection(firestore, "appointments");
-    const appointmentsSnapshot = await getDocs(appointmentsCol);
-    const appointmentsList = appointmentsSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        title: data.title,
-        startDate: data.startDate.toDate(),
-        endDate: data.endDate.toDate(),
-        allDay: data.dayLong || false,
-        recurrenceRule: data.recurrence || "",
-        id: doc.id,
-        description: data.description,
-      };
+    return onSnapshot(appointmentsCol, (snapshot) => {
+      const appointmentsList = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          title: data.title,
+          startDate: data.startDate.toDate(),
+          endDate: data.endDate.toDate(),
+          allDay: data.dayLong || false,
+          recurrenceRule: data.recurrence || "",
+          id: doc.id,
+          description: data.description,
+        };
+      });
+      console.log(appointmentsList);
+      setAppointments(appointmentsList);
     });
-    console.log(appointmentsList);
-
-    return appointmentsList;
   }
+
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
-    async function fetchData() {
-      const data = await getAppointments();
-      setAppointments(data);
-    }
-
-    fetchData();
+    const unsubscribe = listenToAppointments();
+    return () => unsubscribe(); // Cleanup the listener on component unmount
   }, []);
 
   return (
