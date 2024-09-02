@@ -2,7 +2,6 @@ import "devextreme/dist/css/dx.light.css";
 import { Editing, Scheduler } from "devextreme-react/scheduler";
 import { locale, loadMessages } from "devextreme/localization";
 import plMessages from "devextreme/localization/messages/pl.json";
-// import { appointments } from "./data.js";
 import { initializeApp } from "firebase/app";
 import {
   addDoc,
