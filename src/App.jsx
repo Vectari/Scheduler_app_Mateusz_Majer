@@ -22,57 +22,27 @@ function App() {
 
   const views = ["day", "week", "month"];
 
+  // const firebaseApp = initializeApp({
+  //   apiKey: import.meta.env.VITE_API_KEY,
+  //   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  //   projectId: import.meta.env.VITE_PROJECT_ID,
+  //   storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  //   messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  //   appId: import.meta.env.VITE_APP_ID,
+  //   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
+  // });
+
   const firebaseApp = initializeApp({
-    apiKey: import.meta.env.VITE_API_KEY,
-    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_APP_ID,
-    measurementId: import.meta.env.VITE_MEASUREMENT_ID,
+    apiKey: "AIzaSyB_NCNNCPcB14FygD_0yiyaeMrAvujF4y4",
+    authDomain: "schedulerappmateuszmajer.firebaseapp.com",
+    projectId: "schedulerappmateuszmajer",
+    storageBucket: "schedulerappmateuszmajer.appspot.com",
+    messagingSenderId: "167844971416",
+    appId: "1:167844971416:web:1788605f57ff5edac8e1ed",
+    measurementId: "G-YPPBLXVH4K",
   });
 
   const firestore = getFirestore(firebaseApp);
-
-  // const appointmentsDB = doc(firestore, "appointments/appointments");
-  // function handleAppointmentAdd() {
-  //   const docData = {
-  //     title: "Dodawanie do firestore!!!",
-  //   };
-  //   setDoc(appointmentsDB, docData)
-  //     .then(() => {
-  //       console.log("Add new appointment");
-  //     })
-  //     .catch((error) => {
-  //       console.log(`Adding error: ${error}`);
-  //     });
-  // }
-
-  // const appointmentsDB = doc(firestore, "appointments/appointments");
-  // function handleAppointmentAdd() {
-  //   const docData = {
-  //     title: "Dodawanie do firestore!!!",
-  //     title2: "Title 1"
-  //   };
-  //   setDoc(appointmentsDB, docData)
-  //     .then(() => {
-  //       console.log("Add new appointment");
-  //     })
-  //     .catch((error) => {
-  //       console.log(`Adding error: ${error}`);
-  //     });
-  // }
-
-  // async function handleAppointmentAdd(appointment) {
-  //   const appointmentsCol = collection(firestore, "appointments");
-  //   await addDoc(appointmentsCol, {
-  //     title: appointment.title,
-  //     startDate: appointment.startDate, // should be a Firestore Timestamp
-  //     endDate: appointment.endDate, // should be a Firestore Timestamp
-  //     dayLong: appointment.dayLong || false,
-  //     recurrence: appointment.recurrence || "",
-  //   });
-  // }
 
   async function handleAppointmentUpdate(e) {
     const appointment = e.appointmentData; // Extract appointment data from the event
@@ -86,6 +56,7 @@ function App() {
         dayLong: appointment.dayLong || false,
         recurrence: appointment.recurrence || "",
         description: appointment.description,
+        id: appointment.id,
       });
       console.log("Appointment updated successfully");
     } catch (error) {
@@ -108,20 +79,31 @@ function App() {
   async function handleAppointmentAdd(e) {
     const appointment = e.appointmentData; // Extract appointment data from the event
     const appointmentsCol = collection(firestore, "appointments");
-    await addDoc(appointmentsCol, {
-      title: appointment.title,
-      startDate: Timestamp.fromDate(appointment.startDate),
-      endDate: Timestamp.fromDate(appointment.endDate),
-      dayLong: appointment.dayLong || false,
+    const docRef = await addDoc(appointmentsCol, {
+      title: appointment.title || "",
+      startDate: appointment.startDate
+        ? Timestamp.fromDate(appointment.startDate)
+        : null,
+      endDate: appointment.endDate
+        ? Timestamp.fromDate(appointment.endDate)
+        : null,
+      dayLong:
+        typeof appointment.dayLong === "boolean" ? appointment.dayLong : false,
       recurrence: appointment.recurrence || "",
-      description: appointment.description,
+      description: appointment.description || "",
+      // id: appointment.id,
     });
+
+    console.log("Document added with ID:", docRef.id);
+
+    // Możesz teraz przechować docRef.id lokalnie lub w stanie aplikacji
+    return docRef.id;
   }
 
   // handleAppointmentAdd({
-  //   title: "Coś do zrobienia",
+  //   title: "Coś do zrobienia!!",
   //   startDate: new Date("2024-09-10T08:45:00.000Z"),
-  //   endDate: new Date("2024-09-10T10:45:00.000Z")
+  //   endDate: new Date("2024-09-10T10:45:00.000Z"),
   // });
 
   async function getAppointments() {
@@ -130,11 +112,11 @@ function App() {
     const appointmentsList = appointmentsSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
-        title: data.title, // text is used for event title
-        startDate: data.startDate.toDate(), // Scheduler requires JavaScript Date objects
-        endDate: data.endDate.toDate(), // Convert Firestore Timestamps
-        allDay: data.dayLong || false, // Optional field for all-day events
-        recurrenceRule: data.recurrence || "", // Optional recurrence rule
+        title: data.title,
+        startDate: data.startDate.toDate(),
+        endDate: data.endDate.toDate(),
+        allDay: data.dayLong || false,
+        recurrenceRule: data.recurrence || "",
         id: doc.id,
         description: data.description,
       };
@@ -154,32 +136,6 @@ function App() {
     fetchData();
   }, []);
 
-  // addAppointment({
-  //   title: "New Appointment",
-  //   startDate: new Date("2024-08-30T08:45:00.000Z"),
-  //   endDate: new Date("2024-08-30T09:45:00.000Z")
-  // });
-
-  // Update an existing appointment
-  // const handleAppointmentUpdate = async (e) => {
-  //   try {
-  //     const appointmentRef = doc(db, "appointments", e.appointmentData.id);
-  //     await updateDoc(appointmentRef, e.appointmentData);
-  //   } catch (error) {
-  //     console.error("Error updating document: ", error);
-  //   }
-  // };
-
-  // Delete an appointment
-  // const handleAppointmentDelete = async (e) => {
-  //   try {
-  //     const appointmentRef = doc(db, "appointments", e.appointmentData.id);
-  //     await deleteDoc(appointmentRef);
-  //   } catch (error) {
-  //     console.error("Error deleting document: ", error);
-  //   }
-  // };
-
   return (
     <>
       <h2>Scheduler App - Mateusz Majer</h2>
@@ -193,7 +149,7 @@ function App() {
         textExpr="title"
         allDayExpr="dayLong"
         recurrenceRuleExpr="recurrence"
-        onAppointmentAdded={handleAppointmentAdd}
+        onAppointmentAdding={handleAppointmentAdd}
         onAppointmentUpdated={handleAppointmentUpdate}
         onAppointmentDeleted={handleAppointmentDelete}
       >
