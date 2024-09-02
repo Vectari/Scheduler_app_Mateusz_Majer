@@ -85,6 +85,7 @@ function App() {
         endDate: Timestamp.fromDate(new Date(appointment.endDate)),
         dayLong: appointment.dayLong || false,
         recurrence: appointment.recurrence || "",
+        description: appointment.description,
       });
       console.log("Appointment updated successfully");
     } catch (error) {
@@ -113,6 +114,7 @@ function App() {
       endDate: Timestamp.fromDate(appointment.endDate),
       dayLong: appointment.dayLong || false,
       recurrence: appointment.recurrence || "",
+      description: appointment.description,
     });
   }
 
@@ -134,6 +136,7 @@ function App() {
         allDay: data.dayLong || false, // Optional field for all-day events
         recurrenceRule: data.recurrence || "", // Optional recurrence rule
         id: doc.id,
+        description: data.description,
       };
     });
     console.log(appointmentsList);
