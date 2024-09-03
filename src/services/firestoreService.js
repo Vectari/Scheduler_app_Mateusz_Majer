@@ -59,7 +59,7 @@ export function listenToAppointments(callback) {
         startDate: data.startDate.toDate(),
         endDate: data.endDate.toDate(),
         allDay: data.dayLong || false,
-        recurrenceRule: data.recurrence || "",
+        recurrence: data.recurrence || "",
         id: doc.id,
         description: data.description,
       };
