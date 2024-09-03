@@ -12,7 +12,7 @@ import {
   deleteAppointment,
 } from "../services/firestoreService";
 
-const views = ["day", "week", "month"];
+const views = ["day", "week", "month"]; // Array of available views for the Scheduler
 
 const SchedulerComponent = () => {
   const [appointments, setAppointments] = useState([]);
@@ -24,12 +24,13 @@ const SchedulerComponent = () => {
     setIsLocaleLoaded(true);
 
     const unsubscribe = listenToAppointments((appointmentsList) => {
-      setAppointments(appointmentsList);
+      setAppointments(appointmentsList); // Update appointments list when changes occur
     });
 
     return () => unsubscribe();
   }, []);
 
+  // Event handlers for Scheduler actions
   const handleAppointmentUpdate = async (e) => {
     await updateAppointment(e.appointmentData);
   };
