@@ -21,7 +21,6 @@ const SchedulerComponent = () => {
   useEffect(() => {
     locale("pl");
     loadMessages(plMessages);
-    locale(navigator.locale);
     setIsLocaleLoaded(true);
 
     const unsubscribe = listenToAppointments((appointmentsList) => {
@@ -58,7 +57,6 @@ const SchedulerComponent = () => {
         width={1700}
         dataSource={appointments}
         textExpr="title"
-        allDayExpr="dayLong"
         recurrenceRuleExpr="recurrence"
         onAppointmentAdding={handleAppointmentAdd}
         onAppointmentUpdated={handleAppointmentUpdate}
