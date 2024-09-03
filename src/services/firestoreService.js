@@ -1,6 +1,13 @@
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, onSnapshot, doc } from "firebase/firestore";
-import { Timestamp } from "firebase/firestore";
-
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  doc,
+  Timestamp,
+} from "firebase/firestore";
 import firebaseApp from "../config/firebaseConfig";
 
 const firestore = getFirestore(firebaseApp);
@@ -9,9 +16,14 @@ export async function addAppointment(appointment) {
   const appointmentsCol = collection(firestore, "appointments");
   const docRef = await addDoc(appointmentsCol, {
     title: appointment.title || "",
-    startDate: appointment.startDate ? Timestamp.fromDate(appointment.startDate) : null,
-    endDate: appointment.endDate ? Timestamp.fromDate(appointment.endDate) : null,
-    dayLong: typeof appointment.dayLong === "boolean" ? appointment.dayLong : false,
+    startDate: appointment.startDate
+      ? Timestamp.fromDate(appointment.startDate)
+      : null,
+    endDate: appointment.endDate
+      ? Timestamp.fromDate(appointment.endDate)
+      : null,
+    dayLong:
+      typeof appointment.dayLong === "boolean" ? appointment.dayLong : false,
     recurrence: appointment.recurrence || "",
     description: appointment.description || "",
   });
@@ -30,7 +42,6 @@ export async function updateAppointment(appointment) {
       dayLong: appointment.dayLong || false,
       recurrence: appointment.recurrence || "",
       description: appointment.description,
-      id: appointment.id,
     });
     console.log("Appointment updated successfully");
   } catch (error) {
