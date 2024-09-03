@@ -43,7 +43,6 @@ export async function updateAppointment(appointment) {
       recurrence: appointment.recurrence || "",
       description: appointment.description,
     });
-    console.log("Appointment updated successfully");
   } catch (error) {
     console.error("Error updating appointment:", error);
   }
@@ -54,7 +53,6 @@ export async function deleteAppointment(appointmentId) {
 
   try {
     await deleteDoc(appointmentRef);
-    console.log("Appointment deleted successfully");
   } catch (error) {
     console.error("Error deleting appointment:", error);
   }
